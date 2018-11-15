@@ -83,6 +83,7 @@ def load_more(url):
         content_listbox.insert(0, s)
 
 import threading
+mutex = threading.Lock()
 # 开启多线程提交参与信息
 def judge_info():
     global lotteries, info_arr
@@ -131,7 +132,10 @@ def post_info(lottery, join_url):
     if res.status_code == 200 and 'errors' not in data:
         s = '成功参与抽奖: <<%s>>' % lottery.get('prizes').get('data')[0].get('name')
         print(s)
-        info_arr.append(s)
+        mutexFlag = mutex.acquire(True)
+        if mutexFlag:
+            info_arr.append(s)
+            mutex.release()
 
 # 处理输入的内容
 def calculate_data():
